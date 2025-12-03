@@ -2,6 +2,16 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+
+# Virtual environments
 venv/
+.env/
+.venv/
+
+# Output folders (auto-generated during training / analysis)
 results/*
 figures/*
+
+# OS / editor junk
+Thumbs.db
+
