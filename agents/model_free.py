@@ -62,6 +62,13 @@ class MFQAgent:
         q_values = self.Q[state]
         return int(np.argmax(q_values))
 
+    def Q_values(self, state: int):
+        """
+        Return the Q-values for a given state.
+        Used by the HybridAgent to combine MF and MB values.
+        """
+        return self.Q[state]
+    
     def update(self, s: int, a: int, r: float, s_next: Optional[int], done: bool):
         """
         Standard one-step Q-learning update.
