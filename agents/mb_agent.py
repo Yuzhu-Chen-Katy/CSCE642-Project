@@ -19,11 +19,10 @@ class MBAgent:
         return e / e.sum()
 
     def select_action(self, state):
-        # stage-1: state == 0 → choose A/B
-        # stage-2: state == 1 or 2 → choose Left/Right
-        if np.random.rand() < self.epsilon:
-            return np.random.choice([0,1])
-        return np.argmax(self.Q_values(state))
+        q = self.Q_values(state)
+        probs = self.softmax(q)  # already implemented
+        return np.random.choice([0,1], p=probs)
+
 
     def Q_values(self, state):
         # stage-1 planning
