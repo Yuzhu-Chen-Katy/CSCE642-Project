@@ -1,70 +1,89 @@
 # Two-Step RL Project (CSCE 642)
 
-This repo contains an implementation of the Daw Two-Step Task with three reinforcement learning agents:
+This repository contains our implementation of the **Daw Two-Step Task** and three reinforcement learning agents:
 
-- Model-Free (MFQAgent)
-- Model-Based (MBAgent)
-- Hybrid Agent (combination of MF + MB)
+- **Model-Free (MFQAgent)** – Q-learning with softmax exploration  
+- **Model-Based (MBAgent)** – planning using learned transition and reward models  
+- **Hybrid Agent** – weighted combination of MF and MB action values  
 
-We provide code for training, evaluation, and behavioral analysis (stay/switch) using the stochastic two-step environment.
+The project simulates agent behavior under different reward volatilities and analyzes:
+- **Stay probabilities**  
+- **Reward × Transition logistic regression**  
+- **Learning curves**
 
----
+All analysis and plots are reproducible with one command.
 
 ## Getting Started
-
+The code and data should be structured as follows: 
+```
+csce642-two-step-rl/
+│
+├── env/ # Two-step task environment
+├── agents/ # MF, MB, Hybrid agent implementations
+├── experiments/
+│ ├── stimulation.py # Runs all (agent × volatility × seed) simulations
+│ └── trainer.py # Training loop used by all agents
+├── analysis.py # Stay-prob, regression, learning curve analysis
+├── main.py # MASTER script (run simulations + analysis)
+│
+├── results/ # CSV outputs (automatically generated)
+├── figures/ # Plots (automatically generated)
+│
+├── requirements.txt
+└── README.md # This file
+```
 ### Environment Setup
 
 Using Conda (recommended):
 
-```bash
-env_name='csce642_rl'
+```
 conda create -n "$env_name" python=3.10
 conda activate "$env_name"
 pip install -r requirements.txt
 ```
-The code and data should be structured as follows: later
-```
-```
-## Training and Evaluation
-### 1. Run all agents (MF / MB / Hybrid)
-```
-python -m experiments.test_trainer
-```
-This script will:
-- Train MF, MB, and Hybrid agents
-- Print average reward
--(Optional) log behavior for stay/switch analysis
 
-### 2. Train MF with behavior logging
+### Running the Full Pipeline
 ```bash
-from experiments.trainer import run_training
+python main.py
+```
+**1. Run all agents across volatility levels**
 
-rewards_mf, mf_log = run_training(
-    agent_type="mf",
-    n_episodes=1000,
-    env_kwargs={"drift_std": 0.02},
-    agent_kwargs={"alpha": 0.1, "eps": 0.1},
-    verbose=True,
-    log_behavior=True
-)
+-Model-Free (mf)
 
-print(rewards_mf.mean())
-print(mf_log[:5])
-```
-### 3. Changing Reward Drift (Volatility)
-The environment supports a drifting reward probability:
-```
-env = TwoStepEnv(drift_std=0.02)
-```
-Sweep different values:
+-Model-Based (mb)
+
+-Hybrid (hybrid)
+
+-Volatility levels: [0.015, 0.025, 0.04]
+
+-Seeds: configurable in utils/config.py
+
+**2. Perform behavioral analysis**
+
+analysis.py loads the results and computes:
+
+-Stay probabilities (common vs rare, reward vs no reward)
+-Logistic regression predicting stay from
+-previous reward, previous transition, and their interaction
+-Learning curves (mean reward per episode)
+
+It also saves:
 ```bash
-for sigma in [0.01, 0.02, 0.03]:
-    rewards = run_training(
-        agent_type="mf",
-        n_episodes=2000,
-        env_kwargs={"drift_std": sigma},
-        verbose=False
-    )
-    print(sigma, rewards.mean())
-
+results/regression_data.csv
+results/stay_summary.csv
+results/logistic_coefs.csv
+results/learning_curves.csv
 ```
+All figures are saved to:
+```
+figures/
+    stayprob_mf.png
+    stayprob_mb.png
+    stayprob_hybrid.png
+    interaction_vs_volatility.png
+    learningcurves_mf.png
+    learningcurves_mb.png
+    learningcurves_hybrid.png
+```
+
+
