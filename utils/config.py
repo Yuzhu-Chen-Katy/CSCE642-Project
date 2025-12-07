@@ -2,6 +2,10 @@
 
 AGENT_TYPES = ["mf", "mb", "hybrid"]
 
+AGENT_TYPES_TUNED = ["mf", "mb", "hybrid"]
+
+DEFAULT_SIGMA_TUNE = 0.025
+
 VOLATILITY_LEVELS = [0.015, 0.025, 0.04]
 
 N_EPISODES = 1000
