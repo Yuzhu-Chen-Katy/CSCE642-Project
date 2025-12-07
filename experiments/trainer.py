@@ -30,7 +30,7 @@ class Trainer:
         self.agent = agent
         self.n_episodes = n_episodes
 
-    def run(self, verbose=False):
+    def run(self, verbose=False, log_behavior=False):
         """
         Run training for n_episodes.
 
@@ -39,11 +39,15 @@ class Trainer:
                      total reward per episode.
         """
         rewards = []
+        episode_log = []
 
         for ep in range(self.n_episodes):
             state = self.env.reset()
             done = False
             total_reward = 0.0
+            
+            first_stage_action = None
+            transition_type = None
 
             while not done:
                 # 1) choose action from current state
@@ -51,6 +55,13 @@ class Trainer:
 
                 # 2) step environment
                 next_state, reward, done, info = self.env.step(action)
+
+                if state == 0 and first_stage_action is None:
+                    first_stage_action = action
+                    transition_type = info.get(
+                        "transition_type", 
+                        getattr(self.env, "last_transition_type", None),
+                    )
 
                 # 3) update agent
                 #    (support both update(..., info) and update(...) signatures)
@@ -65,10 +76,25 @@ class Trainer:
 
             rewards.append(total_reward)
 
+            if log_behavior:
+                episode_log.append(
+                    {
+                        "episode": ep,
+                        "first_stage_action": int(first_stage_action)
+                        if first_stage_action is not None
+                        else None,
+                        "transition_type": transition_type,
+                        "reward": float(total_reward),
+                    }
+                )
+
             if verbose and ((ep + 1) % 100 == 0 or ep == 0):
                 print(f"Episode {ep+1}/{self.n_episodes}, total reward = {total_reward:.3f}")
 
-        return np.array(rewards)
+        if log_behavior:
+            return np.array(rewards), episode_log
+        else:
+            return np.array(rewards)
 
 
 def make_agent(agent_type: str, **agent_kwargs):
@@ -110,6 +136,7 @@ def run_training(
     env_kwargs: dict | None = None,
     agent_kwargs: dict | None = None,
     verbose: bool = True,
+    log_behavior: bool = False,
 ):
     """
     Convenience function to:
@@ -142,7 +169,6 @@ def run_training(
 
     # 3) train
     trainer = Trainer(env, agent, n_episodes=n_episodes)
-    rewards = trainer.run(verbose=verbose)
-
-    return rewards
+    results = trainer.run(verbose=verbose, log_behavior=log_behavior)
+    return results
 
