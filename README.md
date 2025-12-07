@@ -48,24 +48,24 @@ python main.py
 ```
 **1. Run all agents across volatility levels**
 
--Model-Free (mf)
+- Model-Free (mf)
 
--Model-Based (mb)
+- Model-Based (mb)
 
--Hybrid (hybrid)
+- Hybrid (hybrid)
 
--Volatility levels: [0.015, 0.025, 0.04]
+- Volatility levels: [0.015, 0.025, 0.04]
 
--Seeds: configurable in utils/config.py
+- Seeds: configurable in utils/config.py
 
 **2. Perform behavioral analysis**
 
 analysis.py loads the results and computes:
 
--Stay probabilities (common vs rare, reward vs no reward)
--Logistic regression predicting stay from
--previous reward, previous transition, and their interaction
--Learning curves (mean reward per episode)
+- Stay probabilities (common vs rare, reward vs no reward)
+- Logistic regression predicting stay from
+- previous reward, previous transition, and their interaction
+- Learning curves (mean reward per episode)
 
 It also saves:
 ```bash
