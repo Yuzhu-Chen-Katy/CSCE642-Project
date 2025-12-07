@@ -36,7 +36,7 @@ This script will:
 -(Optional) log behavior for stay/switch analysis
 
 ### 2. Train MF with behavior logging
-```
+```bash
 from experiments.trainer import run_training
 
 rewards_mf, mf_log = run_training(
@@ -55,7 +55,7 @@ print(mf_log[:5])
 The environment supports a drifting reward probability:
 ```
 env = TwoStepEnv(drift_std=0.02)
-```
+```bash
 Sweep different values:
 ```
 for sigma in [0.01, 0.02, 0.03]:
