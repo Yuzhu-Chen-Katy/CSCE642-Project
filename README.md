@@ -55,9 +55,9 @@ print(mf_log[:5])
 The environment supports a drifting reward probability:
 ```
 env = TwoStepEnv(drift_std=0.02)
-```bash
-Sweep different values:
 ```
+Sweep different values:
+```bash
 for sigma in [0.01, 0.02, 0.03]:
     rewards = run_training(
         agent_type="mf",
