@@ -85,5 +85,8 @@ figures/
     learningcurves_mb.png
     learningcurves_hybrid.png
 ```
-
-
+**3. hyperparameter tuning**
+To reproduce hyperparameter tuning results, run:
+```bash
+python -m experiments.hparam_search
+```
