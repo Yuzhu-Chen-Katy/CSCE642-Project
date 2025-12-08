@@ -100,6 +100,7 @@ def plot_stay_prob(summary: pd.DataFrame) -> None:
         plt.xlabel("Previous reward")
         plt.ylabel("Stay probability")
         plt.title(f"Stay probability vs previous outcome ({agent})")
+        plt.grid(True, linestyle="--", alpha=0.7)
         plt.legend()
         out_path = os.path.join(FIG_DIR, f"stayprob_{agent}.png")
         plt.savefig(out_path, bbox_inches="tight")
@@ -151,6 +152,7 @@ def plot_interaction_vs_volatility(coef_df: pd.DataFrame) -> None:
     plt.xlabel("Volatility (drift_std)")
     plt.ylabel("Interaction coefficient (reward × common)")
     plt.title("Logistic regression interaction vs volatility")
+    plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
     out_path = os.path.join(FIG_DIR, "interaction_vs_volatility.png")
     plt.savefig(out_path, bbox_inches="tight")
@@ -160,29 +162,51 @@ def plot_interaction_vs_volatility(coef_df: pd.DataFrame) -> None:
 def compute_learning_curves(full_df: pd.DataFrame) -> pd.DataFrame:
     """
     Compute mean reward per episode across seeds
-    for each (agent_type, volatility).
+    for each (agent_type, volatility), and add a
+    smoothed version using a rolling window.
     """
+    # raw mean reward per (agent_type, volatility, episode)
     grp = full_df.groupby(["agent_type", "volatility", "episode"])["reward"]
     curve_df = grp.mean().reset_index().rename(columns={"reward": "mean_reward"})
+
+    # add smoothed mean reward 
+    window = 50 
+    curve_df["mean_reward_smooth"] = (
+        curve_df
+        .sort_values(["agent_type", "volatility", "episode"])
+        .groupby(["agent_type", "volatility"])["mean_reward"]
+        .transform(lambda x: x.rolling(window=window, min_periods=1).mean())
+    )
+
     return curve_df
 
 
+
 def plot_learning_curves(curve_df: pd.DataFrame) -> None:
-    """Learning curves by agent + volatility."""
+    """Learning curves by agent + volatility (smoothed, with grid)."""
     for agent_type in curve_df["agent_type"].unique():
         plt.figure()
         df_a = curve_df[curve_df["agent_type"] == agent_type]
+
         for vol in sorted(df_a["volatility"].unique()):
-            sub = df_a[df_a["volatility"] == vol]
-            plt.plot(sub["episode"], sub["mean_reward"], label=f"sigma={vol}")
+            sub = df_a[df_a["volatility"] == vol].sort_values("episode")
+
+            plt.plot(
+                sub["episode"],
+                sub["mean_reward_smooth"],
+                label=f"sigma={vol}",
+            )
 
         plt.xlabel("Episode")
-        plt.ylabel("Mean reward")
-        plt.title(f"Learning curves ({agent_type})")
+        plt.ylabel("Smoothed Mean Reward")
+        plt.title(f"Learning Curves ({agent_type})")
+        plt.grid(True, linestyle="--", alpha=0.7)
+
         plt.legend()
         out_path = os.path.join(FIG_DIR, f"learningcurves_{agent_type}.png")
         plt.savefig(out_path, bbox_inches="tight")
         plt.close()
+
 
 
 def run_full_analysis() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
