@@ -37,8 +37,8 @@ csce642-two-step-rl/
 Using Conda (recommended):
 
 ```
-conda create -n "$env_name" python=3.10
-conda activate "$env_name"
+conda create -n two_step_rl python=3.10
+conda activate two_step_rl
 pip install -r requirements.txt
 ```
 
