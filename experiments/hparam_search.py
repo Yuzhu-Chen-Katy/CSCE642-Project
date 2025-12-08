@@ -5,11 +5,14 @@ from typing import List, Dict
 
 import numpy as np
 import pandas as pd
+import json
+
+MASTER_SEED = 12345
+np.random.seed(MASTER_SEED)
 
 from experiments.trainer import run_training
-from utils.config import DEFAULT_SIGMA_TUNE
+from utils.config import DEFAULT_SIGMA_TUNE, AGENT_TYPES_TUNED, RESULTS_DIR
 
-RESULTS_DIR = "results"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # Grids we will search over:
@@ -77,7 +80,6 @@ def run_grid_search() -> pd.DataFrame:
     for alpha in ALPHAS:
         for epsilon in EPSILONS:
             agent_type = "mb"
-            # MBAgent(alpha=..., beta=5.0 (default), epsilon=...)
             agent_kwargs = {"alpha": alpha, "epsilon": epsilon}
             print(f"Tuning MB: alpha={alpha}, epsilon={epsilon}")
             score = evaluate_setting(agent_type, agent_kwargs)
@@ -109,6 +111,37 @@ def run_grid_search() -> pd.DataFrame:
     out_path = os.path.join(RESULTS_DIR, "tuning_results.csv")
     df.to_csv(out_path, index=False)
     print(f"\nSaved tuning results to {out_path}")
+
+    best_params = {}
+
+    for agent_type in AGENT_TYPES_TUNED:
+        sub = df[df["agent_type"] == agent_type]
+        if sub.empty:
+            continue
+
+        best_idx = sub["mean_reward_last_third"].idxmax()
+        best_row = sub.loc[best_idx]
+
+        if agent_type == "mf":
+            best_params["mf"] = {
+                "alpha": float(best_row["alpha"]),
+                "eps": float(best_row["eps_or_epsilon_or_w"]),
+            }
+        elif agent_type == "mb":
+            best_params["mb"] = {
+                "alpha": float(best_row["alpha"]),
+                "epsilon": float(best_row["eps_or_epsilon_or_w"]),
+            }
+        elif agent_type == "hybrid":
+            best_params["hybrid"] = {
+                "w": float(best_row["eps_or_epsilon_or_w"]),
+            }
+
+    best_path = os.path.join(RESULTS_DIR, "best_params.json")
+    with open(best_path, "w") as f:
+        json.dump(best_params, f, indent=2)
+    print(f"Saved best tuned parameters to {best_path}")
+
     return df
 
 
