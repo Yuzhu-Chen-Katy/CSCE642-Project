@@ -21,7 +21,7 @@ class Trainer:
     - agent.select_action(state) -> action (int)
     - agent.update(state, action, reward, next_state, done [, info]) exists
 
-    If your agent.update does NOT take `info`, this trainer will
+    If agent.update does NOT take `info`, this trainer will
     automatically fall back to calling it without info.
     """
 

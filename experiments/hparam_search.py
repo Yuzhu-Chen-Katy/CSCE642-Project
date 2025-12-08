@@ -60,7 +60,7 @@ def evaluate_setting(agent_type: str, agent_kwargs: Dict) -> float:
 def run_grid_search() -> pd.DataFrame:
     rows = []
 
-    # ----- Model-Free agent: tune alpha and eps -----
+    # Model-Free agent: tune alpha and eps
     for alpha in ALPHAS:
         for eps in EPSILONS:
             agent_type = "mf"
@@ -76,7 +76,7 @@ def run_grid_search() -> pd.DataFrame:
                 }
             )
 
-    # ----- Model-Based agent: tune alpha and epsilon -----
+    # Model-Based agent: tune alpha and epsilon
     for alpha in ALPHAS:
         for epsilon in EPSILONS:
             agent_type = "mb"
@@ -92,7 +92,7 @@ def run_grid_search() -> pd.DataFrame:
                 }
             )
 
-    # ----- Hybrid agent: tune mixing weight w -----
+    # Hybrid agent: tune mixing weight w
     for w in WS:
         agent_type = "hybrid"
         agent_kwargs = {"w": w}

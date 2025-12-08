@@ -21,8 +21,8 @@ def get_agent_kwargs(agent_type: str):
     Return hyperparameters for a given agent type.
 
     If results/best_params.json (written by hparam_search) exists and
-    contains tuned parameters for this agent_type, we use those.
-    Otherwise we fall back to fixed defaults.
+    contains tuned parameters for this agent_type, use those.
+    Otherwise fall back to fixed defaults.
     """
     # read best_params.json
     tuned_path = os.path.join(RESULTS_DIR, "best_params.json")
