@@ -15,13 +15,6 @@ N_SEEDS = 20
 RESULTS_DIR = "results"
 
 def get_agent_kwargs(agent_type: str):
-    """
-    Return hyperparameters for a given agent type.
-
-    If results/best_params.json (written by hparam_search) exists and
-    contains tuned parameters for this agent_type, use those.
-    Otherwise fall back to fixed defaults.
-    """
    
     tuned_path = os.path.join(RESULTS_DIR, "best_params.json")
     if os.path.exists(tuned_path):

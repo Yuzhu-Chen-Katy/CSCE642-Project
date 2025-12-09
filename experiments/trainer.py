@@ -15,13 +15,7 @@ class Trainer:
         self.n_episodes = n_episodes
 
     def run(self, verbose=False, log_behavior=False):
-        """
-        Run training for n_episodes.
 
-        Returns:
-            rewards: np.ndarray of shape (n_episodes,)
-                     total reward per episode.
-        """
         rewards = []
         episode_log = []
 
@@ -87,8 +81,7 @@ def make_agent(agent_type: str, **agent_kwargs):
         return MBAgent(**agent_kwargs)
 
     if agent_type == "hybrid":
-        # for hybrid, we build internal MF and MB agents
-        # you can customize their hyperparameters here if needed
+
         mf_kwargs = agent_kwargs.get("mf_kwargs", {})
         mb_kwargs = agent_kwargs.get("mb_kwargs", {})
         w = agent_kwargs.get("w", 0.5)

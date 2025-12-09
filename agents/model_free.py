@@ -1,11 +1,6 @@
 from typing import Optional
 import numpy as np
 
-
-from typing import Optional
-import numpy as np
-
-
 class MFQAgent:
     def __init__(
         self,
@@ -13,7 +8,7 @@ class MFQAgent:
         n_actions: int = 2,
         alpha: float = 0.1,
         gamma: float = 1.0,
-        eps: float = 0.1,          # kept for compatibility, not used now
+        eps: float = 0.1,
         seed: Optional[int] = None,
         tau: float = 0.5,
     ):

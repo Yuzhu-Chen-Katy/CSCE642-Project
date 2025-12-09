@@ -1,5 +1,3 @@
-# experiments/hparam_search.py
-
 import os
 from typing import List, Dict
 
@@ -15,7 +13,6 @@ from utils.config import DEFAULT_SIGMA_TUNE, AGENT_TYPES_TUNED, RESULTS_DIR
 
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
-# Grids we will search over:
 ALPHAS = [0.05, 0.1, 0.2]
 EPSILONS = [0.05, 0.1, 0.2]
 WS = [0.25, 0.5, 0.75]
@@ -25,11 +22,7 @@ N_SEEDS_TUNE = 5
 
 
 def evaluate_setting(agent_type: str, agent_kwargs: Dict) -> float:
-    """
-    Run N_SEEDS_TUNE simulations for a given (agent_type, agent_kwargs)
-    in the medium-volatility condition and return the average reward over
-    the last third of episodes.
-    """
+
     seed_rewards: List[float] = []
 
     for seed in range(N_SEEDS_TUNE):
@@ -44,7 +37,6 @@ def evaluate_setting(agent_type: str, agent_kwargs: Dict) -> float:
             log_behavior=False,
         )
 
-        # Accept both rewards-only and (rewards, ...) return formats
         if isinstance(result, tuple):
             rewards = result[0]
         else:
@@ -60,7 +52,6 @@ def evaluate_setting(agent_type: str, agent_kwargs: Dict) -> float:
 def run_grid_search() -> pd.DataFrame:
     rows = []
 
-    # Model-Free agent: tune alpha and eps
     for alpha in ALPHAS:
         for eps in EPSILONS:
             agent_type = "mf"
@@ -76,7 +67,6 @@ def run_grid_search() -> pd.DataFrame:
                 }
             )
 
-    # Model-Based agent: tune alpha and epsilon
     for alpha in ALPHAS:
         for epsilon in EPSILONS:
             agent_type = "mb"
@@ -92,7 +82,6 @@ def run_grid_search() -> pd.DataFrame:
                 }
             )
 
-    # Hybrid agent: tune mixing weight w
     for w in WS:
         agent_type = "hybrid"
         agent_kwargs = {"w": w}
