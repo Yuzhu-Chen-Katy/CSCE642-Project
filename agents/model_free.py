@@ -46,6 +46,8 @@ class MFQAgent:
         self.eps = eps
         self.tau = tau
 
+        if seed is None:
+            seed = 19
         self.rng = np.random.default_rng(seed)
 
         # Q-table: shape [n_states, n_actions]
