@@ -1,30 +1,3 @@
-
-"""
-Analysis for the two-step RL project.
-
-Reads:
-    results/full_results.csv
-
-Computes:
-    - stay (whether first-stage action repeats)
-    - prev_reward_bin
-    - prev_common_bin
-Performs:
-    - stay probability analysis
-    - logistic regression
-    - learning curves
-
-Outputs:
-    results/regression_data.csv
-    results/stay_summary.csv
-    results/logistic_coefs.csv
-    results/learning_curves.csv
-
-    figures/stayprob_<agent>.png
-    figures/interaction_vs_volatility.png
-    figures/learningcurves_<agent>.png
-"""
-
 import os
 from typing import Tuple
 

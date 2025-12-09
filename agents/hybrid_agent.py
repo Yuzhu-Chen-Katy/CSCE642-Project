@@ -20,14 +20,7 @@ class HybridAgent:
         return np.random.choice([0, 1], p=probs)
 
     def update(self, state, action, reward, next_state, done, info=None):
-        """
-        Hybrid update:
-          - MF: standard Q-learning
-          - MB: same rules as MBAgent.update
-        """
-        # model-free update
         self.mf.update(state, action, reward, next_state, done)
 
-        # model-based update (reuse MBAgent logic)
         self.mb.update(state, action, reward, next_state, done, info)
 

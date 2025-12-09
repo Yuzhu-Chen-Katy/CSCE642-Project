@@ -1,5 +1,3 @@
-# utils/analysis_utils.py
-
 import csv
 
 def build_stay_rows(log, agent_type, sigma, seed):

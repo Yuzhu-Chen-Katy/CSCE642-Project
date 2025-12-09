@@ -1,7 +1,3 @@
-"""
-Trainer for the two-step decision task.
-
-"""
 from typing import Optional
 import numpy as np
 
@@ -12,18 +8,6 @@ from agents.hybrid_agent import HybridAgent
 
 
 class Trainer:
-    """
-    Generic episodic RL trainer.
-
-    Assumes:
-    - env.reset() -> initial_state
-    - env.step(action) -> (next_state, reward, done, info_dict)
-    - agent.select_action(state) -> action (int)
-    - agent.update(state, action, reward, next_state, done [, info]) exists
-
-    If agent.update does NOT take `info`, this trainer will
-    automatically fall back to calling it without info.
-    """
 
     def __init__(self, env, agent, n_episodes=1000):
         self.env = env
@@ -50,10 +34,9 @@ class Trainer:
             transition_type = None
 
             while not done:
-                # 1) choose action from current state
+                
                 action = self.agent.select_action(state)
 
-                # 2) step environment
                 next_state, reward, done, info = self.env.step(action)
 
                 if state == 0 and first_stage_action is None:
@@ -63,12 +46,9 @@ class Trainer:
                         getattr(self.env, "last_transition_type", None),
                     )
 
-                # 3) update agent
-                #    (support both update(..., info) and update(...) signatures)
                 try:
                     self.agent.update(state, action, reward, next_state, done, info)
                 except TypeError:
-                    # if the agent's update doesn't take `info`
                     self.agent.update(state, action, reward, next_state, done)
 
                 total_reward += reward
@@ -98,16 +78,6 @@ class Trainer:
 
 
 def make_agent(agent_type: str, **agent_kwargs):
-    """
-    Factory to construct MF / MB / Hybrid agents from a string.
-
-    agent_type:
-        "mf"      -> MFQAgent
-        "mb"      -> MBAgent
-        "hybrid"  -> HybridAgent (wraps MFQAgent + MBAgent)
-
-    agent_kwargs are passed through to the underlying constructors.
-    """
     agent_type = agent_type.lower()
 
     if agent_type == "mf":
@@ -138,36 +108,15 @@ def run_training(
     verbose: bool = True,
     log_behavior: bool = False,
 ):
-    """
-    Convenience function to:
-        1) build env
-        2) build agent
-        3) train agent
-        4) return per-episode rewards
-
-    env_kwargs: dict passed to TwoStepEnv(...)
-    agent_kwargs: dict passed to make_agent(...)
-
-    Example:
-        rewards = run_training(
-            agent_type="mf",
-            n_episodes=5000,
-            env_kwargs={"drift_sigma": 0.02},
-            agent_kwargs={"alpha": 0.1, "epsilon": 0.1}
-        )
-    """
     if env_kwargs is None:
         env_kwargs = {}
     if agent_kwargs is None:
         agent_kwargs = {}
 
-    # 1) build environment
     env = TwoStepEnv(**env_kwargs)
 
-    # 2) build agent
     agent = make_agent(agent_type, **agent_kwargs)
 
-    # 3) train
     trainer = Trainer(env, agent, n_episodes=n_episodes)
     results = trainer.run(verbose=verbose, log_behavior=log_behavior)
     return results

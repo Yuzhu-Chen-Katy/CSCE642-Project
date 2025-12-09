@@ -1,5 +1,3 @@
-# utils/config.py
-
 import os
 import json
 
@@ -12,7 +10,7 @@ DEFAULT_SIGMA_TUNE = 0.025
 VOLATILITY_LEVELS = [0.015, 0.025, 0.04]
 
 N_EPISODES = 1000
-N_SEEDS = 20  # number of random seeds per config
+N_SEEDS = 20 
 
 RESULTS_DIR = "results"
 
@@ -24,7 +22,7 @@ def get_agent_kwargs(agent_type: str):
     contains tuned parameters for this agent_type, use those.
     Otherwise fall back to fixed defaults.
     """
-    # read best_params.json
+   
     tuned_path = os.path.join(RESULTS_DIR, "best_params.json")
     if os.path.exists(tuned_path):
         try:

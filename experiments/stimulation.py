@@ -1,22 +1,4 @@
 
-"""
-Run all simulations for the two-step RL project.
-
-Loops over:
-    - agent_type: ["mf", "mb", "hybrid"]
-    - volatility (drift_std)
-    - random seeds
-
-For each condition, uses experiments.trainer.run_training to generate
-trial-by-trial logs, and saves one big CSV with columns:
-
-    s1, s2, a1, a2, reward, common, episode,
-    agent_type, volatility, seed
-
-Output:
-    results/full_results.csv
-"""
-
 import os
 from typing import List
 
@@ -36,14 +18,6 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 
 
 def simulate_condition(agent_type: str, sigma: float, seed: int) -> pd.DataFrame:
-    """
-    Run one (agent_type, volatility, seed) condition.
-
-    Assumes run_training(..., log_behavior=True) returns:
-        rewards, log
-    where each element of log is a dict with keys like:
-        "s1", "s2", "a1", "a2", "reward", "common", "episode"
-    """
     env_kwargs = {"drift_std": sigma, "seed": seed}
     agent_kwargs = get_agent_kwargs(agent_type)
 
@@ -56,13 +30,11 @@ def simulate_condition(agent_type: str, sigma: float, seed: int) -> pd.DataFrame
         log_behavior=True,
     )
 
-    # Attach metadata to each row
     records: List[dict] = []
     for row in log:
         a1 = row["first_stage_action"]
         trans = row["transition_type"]
 
-        # encode common/rare as 1/0; None stays None
         if trans == "common":
             common = 1
         elif trans == "rare":
@@ -86,7 +58,6 @@ def simulate_condition(agent_type: str, sigma: float, seed: int) -> pd.DataFrame
 
 
 def run_all_simulations() -> pd.DataFrame:
-    """Run all (agent, volatility, seed) combos and save a single CSV."""
     all_dfs: List[pd.DataFrame] = []
 
     for agent_type in AGENT_TYPES:
